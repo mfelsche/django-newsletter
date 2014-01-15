@@ -167,7 +167,11 @@ class Subscription(models.Model):
 
     def get_name(self):
         if self.user:
-            return self.user.get_full_name()
+            return "{0} {1} {2}".format(
+                self.user.get_appellation_display(),
+                self.user.first_name,
+                self.user.last_name
+            )
         return self.name_field
 
     def set_name(self, name):
@@ -594,7 +598,7 @@ class Submission(models.Model):
 
                     message.send()
 
-                except Exception, e:
+                except Exception as e:
                     # TODO: Test coverage for this branch.
                     logger.error(
                         ugettext(u'Message %(subscription)s failed '
@@ -602,8 +606,8 @@ class Submission(models.Model):
                         {'subscription': subscription,
                          'error': e}
                     )
-
-            self.sent = True
+                else:
+                    self.sent = True
 
         finally:
             self.sending = False
